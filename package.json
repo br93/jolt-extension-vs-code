@@ -2,7 +2,7 @@
 	"name": "jolt-extension",
 	"displayName": "jolt-extension",
 	"description": "Jolt extension for VS Code",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"publisher": "br93",
 	"repository": "https://github.com/br93/jolt-extension-vs-code",
 	"engines": {
