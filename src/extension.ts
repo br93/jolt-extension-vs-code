@@ -28,7 +28,7 @@ async function openJSON(name: string){
 		return text;
 	},
 	(error) => {
-		vscode.window.showInformationMessage("File " + name + ".json not found in rootPath");
+		vscode.window.showInformationMessage("File " + name + " not found in rootPath");
 		console.log("File " + name + ".json not found in rootPath");
 		throw new vscode.CancellationError();
 	});
