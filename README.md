@@ -7,8 +7,8 @@ This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file
 - Open Command Pallete, type "JOLT (Create input/spec)" to create input and spec
 
 - Edit input and spec
-
   - input (format):
+```
     {
       "rating": {
         "primary": {
@@ -19,8 +19,9 @@ This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file
         }
       }
     }
-
+```
 - spec (format)
+```
     [
       {
         "operation": "shift",
@@ -50,5 +51,5 @@ This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file
         }
       }
     ]
-
+```
 - Open Command Pallete, type "JOLT (Transform)" and transform your payload
