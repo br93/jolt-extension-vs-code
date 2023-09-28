@@ -1,16 +1,66 @@
 import * as vscode from 'vscode';
 import fetch, { Request } from 'node-fetch';
+import path = require('path');
 
 export function activate(context: vscode.ExtensionContext) {
+
+	const extensionDir = context.extensionPath;
+	const resourcesPath = path.join(extensionDir, 'src', 'resources');
 
 	const disposable = vscode.commands.registerCommand('extension.jolt', () => {
 		transform();
 	});
 
-	context.subscriptions.push(disposable);
+	const windowDisposable = vscode.commands.registerCommand('openWindow.jolt', () => {
+		openWindows(resourcesPath);
+	});
+
+	const fileDisposable = vscode.commands.registerCommand('file.jolt', () => {
+		transformFromFile();
+	});
+
+	context.subscriptions.push(disposable, windowDisposable, fileDisposable);
+}
+
+async function openWindows(resourcesPath: string) {
+
+	const input = await vscode.workspace.openTextDocument(path.join(resourcesPath, 'input.json'));
+	const spec = await vscode.workspace.openTextDocument(path.join(resourcesPath, 'spec.json'));
+
+	vscode.window.showTextDocument(input, vscode.ViewColumn.Beside, false);
+	vscode.window.showTextDocument(spec, vscode.ViewColumn.Beside, true);
+}
+
+function getContent(json: string) {
+
+	const textDocuments = vscode.workspace.textDocuments;
+
+	const content = textDocuments.find((document) => {
+		const text = document.getText();
+		if(json == "spec")
+			return text.startsWith('[');
+		return text.startsWith('{');
+
+	  });
+	return content?.getText() ?? '';
 }
 
 async function transform() {
+
+	
+	const spec = getContent("spec");
+	const input = getContent("input");
+	const sort = false;
+
+	if (!spec || !input) {
+		throw new vscode.CancellationError();
+	}
+
+	jolt(input, spec, sort);
+
+}
+
+async function transformFromFile() {
 
 	const input = await openJSON("input.json");
 	const spec = await openJSON("spec.json");
@@ -44,6 +94,9 @@ function workspaceFolder() {
 
 async function jolt(input: string, spec: string, sort: boolean) {
 
+	console.log(input);
+	console.log(spec);
+
 	const requestOptions = {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -55,7 +108,7 @@ async function jolt(input: string, spec: string, sort: boolean) {
 		.then(response => response.json())
 		.then(data => {
 			const result = JSON.stringify(data, null, 4);
-			printOutput(result, "json");
+			printOutput(result);
 			vscode.window.showInformationMessage("JOLT transform successful");
 		})
 		.catch(error => {
@@ -64,11 +117,21 @@ async function jolt(input: string, spec: string, sort: boolean) {
 		});
 }
 
+async function openDocument(content: string, language?: string) {
+	const document = await vscode.workspace.openTextDocument({
+		language,
+		content
+	});
+
+	return document;
+}
+
 async function printOutput(content: string, language?: string) {
 	const document = await vscode.workspace.openTextDocument({
 		language,
 		content,
 	});
 
-	vscode.window.showTextDocument(document);
+	vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, true);
+	
 }

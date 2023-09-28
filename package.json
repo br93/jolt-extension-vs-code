@@ -2,7 +2,7 @@
 	"name": "jolt-extension",
 	"displayName": "jolt-extension",
 	"description": "Jolt extension for VS Code",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"publisher": "br93",
 	"repository": "https://github.com/br93/jolt-extension-vs-code",
 	"engines": {
@@ -17,7 +17,15 @@
 		"commands": [
 			{
 				"command": "extension.jolt",
-				"title": "Jolt"
+				"title": "Jolt (Transform)"
+			},
+			{
+				"command": "openWindow.jolt",
+				"title": "JOLT (Create input/spec)"
+			},
+			{
+				"command": "file.jolt",
+				"title": "Jolt (Transform from files)"
 			}
 		]
 	},

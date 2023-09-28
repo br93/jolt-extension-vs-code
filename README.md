@@ -4,52 +4,51 @@ This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file
 
 ## Running the Extension
 
-- Create a "input.json" in root of workspace/project.
-```
-{
-  "rating": {
-    "primary": {
-      "value": 3
-    },
-    "quality": {
-      "value": 3
-    }
-  }
-}
+- Open Command Pallete, type "JOLT (Create input/spec)" to create input and spec
 
-```
+- Edit input and spec
 
-- Create a "spec.json" in root of workspace/project.
-```
-[
-  {
-    "operation": "shift",
-    "spec": {
+  - input (format):
+    {
       "rating": {
         "primary": {
-          "value": "Rating",
-          "max": "RatingRange"
+          "value": 3
         },
-        "*": {
-          "max": "SecondaryRatings.&1.Range",
-          "value": "SecondaryRatings.&1.Value",
-          "$": "SecondaryRatings.&1.Id"
+        "quality": {
+          "value": 3
         }
       }
     }
-  },
-  {
-    "operation": "default",
-    "spec": {
-      "Range": 5,
-      "SecondaryRatings": {
-        "*": {
-          "Range": 5
-        }
-      }
-    }
-  }
-]
 
-```
-- Open Command Pallete, type "JOLT" and run the extension	
+- spec (format)
+    [
+      {
+        "operation": "shift",
+        "spec": {
+          "rating": {
+            "primary": {
+              "value": "Rating",
+              "max": "RatingRange"
+            },
+            "*": {
+              "max": "SecondaryRatings.&1.Range",
+              "value": "SecondaryRatings.&1.Value",
+              "$": "SecondaryRatings.&1.Id"
+            }
+          }
+        }
+      },
+      {
+        "operation": "default",
+        "spec": {
+          "Range": 5,
+          "SecondaryRatings": {
+            "*": {
+              "Range": 5
+            }
+          }
+        }
+      }
+    ]
+
+- Open Command Pallete, type "JOLT (Transform)" and transform your payload
