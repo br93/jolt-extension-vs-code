@@ -1,13 +1,12 @@
 # JOLT extension for VS Code
 
-This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file in root of workspace/project, run the extension and check the results.
+This is a JOLT extension for VS Code. Edit your input and spec, transform and check the results.
 
 ## Running the Extension
 
 - Open Command Pallete, type "JOLT (Create input/spec)" to create input and spec
 
-- Edit input and spec
-  - input (format):
+- Edit input (example format):
 ```
     {
       "rating": {
@@ -20,7 +19,7 @@ This is a JOLT extension for VS Code. Create a "input.json" and "spec.json" file
       }
     }
 ```
-- spec (format)
+- Edit spec (example format)
 ```
     [
       {
