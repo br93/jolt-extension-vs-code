@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import fetch, { Request } from 'node-fetch';
 import path = require('path');
-import { TextEncoder } from 'node:util';
+import { TextEncoder, TextDecoder } from 'node:util';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -64,19 +64,26 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 	const requestOptions = {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		body: new URLSearchParams({ input: input, spec: spec, sort: sort.toString() }).toString()
+		body: new URLSearchParams({ input: input, spec: spec, sort: sort.toString() }).toString(),
+
 	};
 	const request = new Request('https://jolt-demo.appspot.com/transform', requestOptions);
 
 	fetch(request)
-		.then(response => response.json())
-		.then(data => {
-			const result = JSON.stringify(data, null, 4);
-			editOutput(result, resourcesPath);
-			vscode.window.showInformationMessage("JOLT transform successful");
+		.then(response => response.arrayBuffer())
+		.then(buffer => {
+			const decoder = new TextDecoder('iso-8859-1');
+			const data = decoder.decode(buffer);
+
+			if (data.startsWith("{"))
+				vscode.window.showInformationMessage("JOLT transform successful");
+			else 
+				vscode.window.showInformationMessage(data);	
+			editOutput(data, resourcesPath);
+
 		})
 		.catch(error => {
-			editOutput(error, resourcesPath);
+			printOutput(JSON.stringify(error), "json");
 			vscode.window.showInformationMessage("Error, check your json file");
 		});
 }
@@ -88,10 +95,18 @@ async function editOutput(content: string, resourcesPath: string) {
 
 	await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(content));
 	const output = await vscode.workspace.openTextDocument(outputPath);
-	vscode.window.showTextDocument(output, vscode.ViewColumn.Beside, true);
-	
+	await vscode.window.showTextDocument(output, vscode.ViewColumn.Beside, true);
 }
 
-async function resetOutput(resourcesPath: string){
-	editOutput("null", resourcesPath);
+async function resetOutput(resourcesPath: string) {
+	await editOutput("null", resourcesPath);
+}
+
+async function printOutput(content: string, language?: string) {
+	const document = await vscode.workspace.openTextDocument({
+		language,
+		content,
+	});
+
+	vscode.window.showTextDocument(document);
 }
