@@ -48,8 +48,6 @@ async function transform(resourcesPath: string) {
 	const input = getContent("input");
 	const sort = false;
 
-	resetOutput(resourcesPath);
-
 	if (!spec || !input) {
 		vscode.window.showInformationMessage("Error, check your json file");
 		throw new vscode.CancellationError();
@@ -75,11 +73,12 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 			const decoder = new TextDecoder('iso-8859-1');
 			const data = decoder.decode(buffer);
 
+			editOutput(data, resourcesPath);
+
 			if (data.startsWith("{"))
 				vscode.window.showInformationMessage("JOLT transform successful");
-			else 
-				vscode.window.showInformationMessage(data);	
-			editOutput(data, resourcesPath);
+			else
+				vscode.window.showInformationMessage(data);
 
 		})
 		.catch(error => {
@@ -90,12 +89,18 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 
 async function editOutput(content: string, resourcesPath: string) {
 
-	const outputPath = path.join(resourcesPath, "OUTPUT.json");
-	const fileUri = vscode.Uri.parse(outputPath)
+	try {
+		const outputPath = path.join(resourcesPath, "OUTPUT.json");
+		const fileUri = vscode.Uri.parse(outputPath);
 
-	await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(content));
-	const output = await vscode.workspace.openTextDocument(outputPath);
-	await vscode.window.showTextDocument(output, vscode.ViewColumn.Beside, true);
+		await vscode.workspace.fs.writeFile(fileUri, new TextEncoder().encode(content));
+		const output = await vscode.workspace.openTextDocument(outputPath);
+		await vscode.window.showTextDocument(output, vscode.ViewColumn.Beside, true);
+	} catch {
+		printOutput(content, "json");
+	}
+
+
 }
 
 async function resetOutput(resourcesPath: string) {
