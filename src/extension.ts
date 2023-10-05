@@ -25,7 +25,7 @@ async function openWindows(resourcesPath: string) {
 	const spec = await vscode.workspace.openTextDocument(path.join(resourcesPath, 'SPEC.json'));
 
 	vscode.window.showTextDocument(input, vscode.ViewColumn.Beside, false);
-	vscode.window.showTextDocument(spec, vscode.ViewColumn.Beside, false);
+	vscode.window.showTextDocument(spec, vscode.ViewColumn.Beside, true);
 }
 
 function getContent(json: string) {
@@ -34,11 +34,14 @@ function getContent(json: string) {
 
 	const content = textDocuments.find((document) => {
 		const text = document.getText();
+		const fileName = document.fileName;
+		
 		if (json == "spec")
-			return text.startsWith('[');
-		return text.startsWith('{');
+			return fileName.endsWith('SPEC.json') || text.startsWith('[');
+		return fileName.endsWith('INPUT.json') || text.startsWith('{');
 
 	});
+	
 	return content?.getText() ?? '';
 }
 
@@ -73,7 +76,7 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 			const decoder = new TextDecoder('iso-8859-1');
 			const data = decoder.decode(buffer);
 
-			editOutput(data, resourcesPath);
+			showOutput(data, resourcesPath);
 
 			if (data.startsWith("{"))
 				vscode.window.showInformationMessage("JOLT transform successful");
@@ -82,12 +85,12 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 
 		})
 		.catch(error => {
-			printOutput(JSON.stringify(error), "json");
+			showOutput(JSON.stringify(error), "json");
 			vscode.window.showInformationMessage("Error, check your json file");
 		});
 }
 
-async function editOutput(content: string, resourcesPath: string) {
+async function showOutput(content: string, resourcesPath: string) {
 
 	try {
 		const outputPath = path.join(resourcesPath, "OUTPUT.json");
@@ -97,21 +100,16 @@ async function editOutput(content: string, resourcesPath: string) {
 		const output = await vscode.workspace.openTextDocument(outputPath);
 		await vscode.window.showTextDocument(output, vscode.ViewColumn.Beside, true);
 	} catch {
-		printOutput(content, "json");
+		showUntitledOutput(content, "json");
 	}
 
-
 }
 
-async function resetOutput(resourcesPath: string) {
-	await editOutput("null", resourcesPath);
-}
-
-async function printOutput(content: string, language?: string) {
+async function showUntitledOutput(content: string, language?: string) {
 	const document = await vscode.workspace.openTextDocument({
 		language,
 		content,
 	});
 
-	vscode.window.showTextDocument(document);
+	vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, true);
 }
