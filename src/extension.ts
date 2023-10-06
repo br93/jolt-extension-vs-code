@@ -35,13 +35,13 @@ function getContent(json: string) {
 	const content = textDocuments.find((document) => {
 		const text = document.getText();
 		const fileName = document.fileName;
-		
+
 		if (json == "spec")
 			return fileName.endsWith('SPEC.json') || text.startsWith('[');
 		return fileName.endsWith('INPUT.json') || text.startsWith('{');
 
 	});
-	
+
 	return content?.getText() ?? '';
 }
 
@@ -76,12 +76,15 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 			const decoder = new TextDecoder('iso-8859-1');
 			const data = decoder.decode(buffer);
 
-			showOutput(data, resourcesPath);
+			return data
+		})
+		.then(text => {
+			showOutput(text, resourcesPath);
 
-			if (data.startsWith("{"))
+			if (text.startsWith("{"))
 				vscode.window.showInformationMessage("JOLT transform successful");
 			else
-				vscode.window.showInformationMessage(data);
+				vscode.window.showInformationMessage(text);
 
 		})
 		.catch(error => {
