@@ -38,7 +38,7 @@ function getContent(json: string) {
 
 		if (json == "spec")
 			return fileName.endsWith('SPEC.json') || text.startsWith('[');
-		return fileName.endsWith('INPUT.json') || text.startsWith('{');
+		return fileName.endsWith('INPUT.json') || (text.startsWith('{') && !text.includes("output"));
 
 	});
 
@@ -79,7 +79,7 @@ async function jolt(input: string, spec: string, sort: boolean, resourcesPath: s
 			return data
 		})
 		.then(text => {
-			showOutput(text, resourcesPath);
+			showOutput(generateOutput(text), resourcesPath);
 
 			if (text.startsWith("{"))
 				vscode.window.showInformationMessage("JOLT transform successful");
@@ -109,10 +109,39 @@ async function showOutput(content: string, resourcesPath: string) {
 }
 
 async function showUntitledOutput(content: string, language?: string) {
-	const document = await vscode.workspace.openTextDocument({
-		language,
-		content,
-	});
 
-	vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, true);
+	const alreadyExists = editUntitledOutput(content);
+
+	if (!alreadyExists) {
+		const document = await vscode.workspace.openTextDocument({
+			language,
+			content,
+		});
+
+		vscode.window.showTextDocument(document, getViewColumn() + 1, true);
+	}
+
+}
+
+function editUntitledOutput(content: string) {
+
+	const mutableEditor = vscode.window.visibleTextEditors.concat();
+
+	const untitled = mutableEditor.find(
+		(untitled) => untitled.document.isUntitled
+	);
+
+	return untitled?.edit(editBuilder => {
+		const document = untitled?.document;
+		
+			editBuilder.replace(new vscode.Range(document.lineAt(0).range.start, document.lineAt(document.lineCount - 1).range.end), content);
+	}) ?? '';
+}
+
+function getViewColumn() {
+	return vscode.window.visibleTextEditors.length;
+}
+
+function generateOutput(content: string){
+	return JSON.stringify(JSON.parse('{ "output":'  + content + ' }'), null, 4);
 }
