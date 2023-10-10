@@ -89,7 +89,7 @@ class JoltTransformation {
                 content,
             });
     
-            vscode.window.showTextDocument(document, this.getViewColumn() + 1, true);
+            vscode.window.showTextDocument(document, this.getViewColumn() + 2, true);
         }
     
     }
