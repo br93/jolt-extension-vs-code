@@ -17,11 +17,19 @@
 		"commands": [
 			{
 				"command": "extension.jolt",
-				"title": "Jolt (Transform)"
+				"title": "JOLT (Transform)"
 			},
 			{
 				"command": "openWindow.jolt",
 				"title": "JOLT (Create input/spec)"
+			},
+			{
+				"command": "extension.jslt",
+				"title": "JSLT (Transform)"
+			},
+			{
+				"command": "openWindow.jslt",
+				"title": "JSLT (Create json/jslt)"
 			}
 		],
 		"viewsContainers": {
