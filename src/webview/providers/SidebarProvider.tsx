@@ -37,7 +37,7 @@ export class JoltWebview implements vscode.WebviewViewProvider {
 					jolt.openWindows(this.resourcesPath);
 					break;
 				case 'JOLT_TRANSFORM':
-					jolt.transform(this.resourcesPath);
+					jolt.transform();
 					break;
 				default:
 					vscode.window.showWarningMessage("error");
