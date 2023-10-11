@@ -1,3 +1,8 @@
+let idparts = split(.id, "-")
+let xxx = [for ($idparts) "x" * size(.)]
+
 {
-  "nome": .url
+  "id" : join($xxx, "-"),
+  "type" : "Anonymized-View",
+  * : .
 }
