@@ -1,20 +1,25 @@
 import * as vscode from 'vscode';
 import fetch, { Request } from 'node-fetch';
-import path = require('path');
-import { TextDecoder } from 'node:util';
+import { VSCodeActions } from './actions';
+import { Transformation } from './interfaces/transformation';
 
-class JoltTransformation {
+class JoltTransformation implements Transformation{
 
-    async openWindows(resourcesPath: string) {
+    private actions: VSCodeActions
 
-        const input = await vscode.workspace.openTextDocument(path.join(resourcesPath, 'INPUT.json'));
-        const spec = await vscode.workspace.openTextDocument(path.join(resourcesPath, 'SPEC.json'));
-    
-        vscode.window.showTextDocument(input, vscode.ViewColumn.Beside, false);
-        vscode.window.showTextDocument(spec, vscode.ViewColumn.Beside, true);
+    constructor() {
+        this.actions = JoltTransformation.createAction();
     }
     
-    private getContent(json: string) {
+    static createAction(): VSCodeActions {
+        return new VSCodeActions();
+    }
+
+    async openWindows(resourcesPath: string) {
+        this.actions.openWindow(resourcesPath, 'jolt', 'INPUT.json', 'SPEC.json');
+    }
+    
+    getContent(json: string) {
     
         const textDocuments = vscode.workspace.textDocuments;
     
@@ -31,7 +36,7 @@ class JoltTransformation {
         return content?.getText() ?? '';
     }
     
-    async transform(resourcesPath: string) {
+    async transform() {
     
         const spec = this.getContent("spec");
         const input = this.getContent("input");
@@ -42,11 +47,11 @@ class JoltTransformation {
             throw new vscode.CancellationError();
         }
     
-        this.jolt(input, spec, sort, resourcesPath);
+        this.jolt(input, spec, sort);
     
     }
-    
-    private async jolt(input: string, spec: string, sort: boolean, resourcesPath: string) {
+
+    private async jolt(input: string, spec: string, sort: boolean) {
     
         const requestOptions = {
             method: 'POST',
@@ -59,13 +64,10 @@ class JoltTransformation {
         fetch(request)
             .then(response => response.arrayBuffer())
             .then(buffer => {
-                const decoder = new TextDecoder('iso-8859-1');
-                const data = decoder.decode(buffer);
-    
-                return data
+               return this.actions.decode('iso-8859-1', buffer);
             })
             .then(text => {
-                this.showOutput(this.generateOutput(text), "json");
+                this.actions.showOutput(this.actions.generateOutput(text), "json");
     
                 if (text.startsWith("{"))
                     vscode.window.showInformationMessage("JOLT transform successful");
@@ -74,47 +76,9 @@ class JoltTransformation {
     
             })
             .catch(error => {
-                this.showOutput(JSON.stringify(error), "json");
+                this.actions.showOutput(JSON.stringify(error), "json");
                 vscode.window.showInformationMessage("Error, check your json file");
             });
-    }
-    
-    private async showOutput(content: string, language?: string) {
-    
-        const alreadyExists = this.editOutput(content);
-    
-        if (!alreadyExists) {
-            const document = await vscode.workspace.openTextDocument({
-                language,
-                content,
-            });
-    
-            vscode.window.showTextDocument(document, this.getViewColumn() + 2, true);
-        }
-    
-    }
-    
-    private editOutput(content: string) {
-    
-        const mutableEditor = vscode.window.visibleTextEditors.concat().reverse();
-    
-        const untitled = mutableEditor.find(
-            (untitled) => untitled.document.isUntitled
-        );
-    
-        return untitled?.edit(editBuilder => {
-            const document = untitled?.document;
-            
-                editBuilder.replace(new vscode.Range(document.lineAt(0).range.start, document.lineAt(document.lineCount - 1).range.end), content);
-        }) ?? '';
-    }
-    
-    private getViewColumn() {
-        return vscode.window.visibleTextEditors.length;
-    }
-    
-    private generateOutput(content: string){
-        return JSON.stringify(JSON.parse('{ "output":'  + content + ' }'), null, 4);
     }
 
 }
