@@ -26,10 +26,13 @@ class JoltTransformation implements Transformation{
         const content = textDocuments.find((document) => {
             const text = document.getText();
             const fileName = document.fileName;
+
+            if(document.languageId.includes("jsonc"))
+                return
     
             if (json == "spec")
                 return fileName.endsWith('SPEC.json') || text.startsWith('[');
-            return fileName.endsWith('INPUT.json') || (text.startsWith('{') && !text.includes("output"));
+            return fileName.endsWith('INPUT.json') || (text.startsWith('{'));
     
         });
     
@@ -67,7 +70,7 @@ class JoltTransformation implements Transformation{
                return this.actions.decode('iso-8859-1', buffer);
             })
             .then(text => {
-                this.actions.showOutput(this.actions.generateOutput(text), "json");
+                this.actions.showOutput(this.actions.generateOutput(text), "jsonc");
     
                 if (text.startsWith("{"))
                     vscode.window.showInformationMessage("JOLT transform successful");
@@ -76,7 +79,7 @@ class JoltTransformation implements Transformation{
     
             })
             .catch(error => {
-                this.actions.showOutput(JSON.stringify(error), "json");
+                this.actions.showOutput(JSON.stringify(error), "jsonc");
                 vscode.window.showInformationMessage("Error, check your json file");
             });
     }

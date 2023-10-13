@@ -47,7 +47,7 @@ export class VSCodeActions {
     }
 
     public generateOutput(content: string) {
-        return JSON.stringify(JSON.parse('{ "output":' + content + ' }'), null, 4);
+        return JSON.stringify(JSON.parse(content), null, 4);
     }
 
     public decode(format: string, buffer: ArrayBuffer) {
