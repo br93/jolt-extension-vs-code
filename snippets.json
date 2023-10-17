@@ -1,14 +1,7 @@
 {
-	"JOLT operations": {
-		"prefix": "operation",
-		"body": [
-			"\"operation\": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\","
-		],
-		"description": "Log output to console"
-	},
 
     "JOLT": {
-        "prefix": "jolt",
+        "prefix": "jolt-first",
         "body": [
             "[",
             "\t{",
@@ -17,6 +10,16 @@
             "\t}",
             "]"
 
+        ]
+    },
+
+    "JOLT-NEW": {
+        "prefix": "new-jolt",
+        "body": [ 
+            "{",
+            "\t\"operation\": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\",",
+            "\t\"spec\": {}",
+            "}"
         ]
     }
 }

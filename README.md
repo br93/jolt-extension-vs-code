@@ -11,54 +11,7 @@
 
 ### JOLT
 
-- Open Command Pallete, type "JOLT (Create input/spec)" to create input and spec
-
-- Edit input (example format):
-```
-    {
-      "rating": {
-        "primary": {
-          "value": 
-        },
-        "quality": {
-          "value": 3
-        }
-      }
-    }
-```
-- Edit spec (example format)
-```
-    [
-      {
-        "operation": "shift",
-        "spec": {
-          "rating": {
-            "primary": {
-              "value": "Rating",
-              "max": "RatingRange"
-            },
-            "*": {
-              "max": "SecondaryRatings.&1.Range",
-              "value": "SecondaryRatings.&1.Value",
-              "$": "SecondaryRatings.&1.Id"
-            }
-          }
-        }
-      },
-      {
-        "operation": "default",
-        "spec": {
-          "Range": 5,
-          "SecondaryRatings": {
-            "*": {
-              "Range": 5
-            }
-          }
-        }
-      }
-    ]
-```
-- Open Command Pallete, type "JOLT (Transform)" and transform your payload
+![JOLT](https://raw.githubusercontent.com/br93/jolt-extension-vs-code/main/documentation/jolt.gif)
 
 ### JSLT
 

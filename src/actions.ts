@@ -9,7 +9,7 @@ export class VSCodeActions {
         vscode.window.showTextDocument(firstWindow, vscode.ViewColumn.Beside, false);
 
         const secondWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, secondFile));
-        vscode.window.showTextDocument(secondWindow, vscode.ViewColumn.Beside, false);
+        vscode.window.showTextDocument(secondWindow, vscode.ViewColumn.Beside, true);
     }
 
     async showOutput(content: string, language?: string) {
