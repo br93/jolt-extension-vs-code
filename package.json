@@ -2,7 +2,7 @@
 	"name": "jolt-extension",
 	"displayName": "jolt-extension",
 	"description": "Jolt extension for VS Code",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"publisher": "br93",
 	"author": "Bruno Reis",
 	"license": "LGPL-3.0-or-later",
@@ -31,6 +31,10 @@
 			{
 				"command": "openWindow.jolt",
 				"title": "JOLT (Create input/spec)"
+			},
+			{
+				"command": "operation.jolt",
+				"title": "JOLT (New operation)"
 			},
 			{
 				"command": "extension.jslt",

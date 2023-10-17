@@ -3,6 +3,8 @@ import path = require('path');
 import { JoltWebview } from './webview/providers/SidebarProvider';
 import { jolt } from './jolt';
 import { jslt } from './jslt';
+import { newOperation } from './codelens/codelens';
+import JoltCodeLensProvider from './codelens/provider';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -32,5 +34,16 @@ export function activate(context: vscode.ExtensionContext) {
 		"jolt-webview",
 		sidebar,
 	);
+	
 	context.subscriptions.push(view);
+
+	const operation = vscode.commands.registerCommand('operation.jolt', newOperation);
+
+	const json = {
+		language: "json"
+	}
+
+	const codelens = vscode.languages.registerCodeLensProvider(json, new JoltCodeLensProvider());
+
+	context.subscriptions.push(operation, codelens);
 }
