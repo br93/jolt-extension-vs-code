@@ -1,0 +1,22 @@
+{
+	"JOLT operations": {
+		"prefix": "operation",
+		"body": [
+			"\"operation\": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\","
+		],
+		"description": "Log output to console"
+	},
+
+    "JOLT": {
+        "prefix": "jolt",
+        "body": [
+            "[",
+            "\t{",
+            "\t\t\"operation\": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\",",
+            "\t\t\"spec\": {}",
+            "\t}",
+            "]"
+
+        ]
+    }
+}

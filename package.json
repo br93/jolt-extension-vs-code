@@ -59,7 +59,13 @@
 					"icon": "src/media/jolt.svg"
 				}
 			]
-		}
+		},
+		"snippets": [
+			{
+			  "language": "json",
+			  "path": "./snippets.json"
+			}
+		  ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run esbuild-base -- --minify",
