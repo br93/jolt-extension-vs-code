@@ -44,8 +44,7 @@ class JoltTransformation implements Transformation {
                 content,
             });
 
-        vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false);
-        vscode.window.showTextDocument(document, )   
+        vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false); 
     }
 
     private buildSpecJSON(operation: string) {
