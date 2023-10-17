@@ -17,7 +17,7 @@ class JsltTransformation implements Transformation {
     }
 
     async openWindows(resourcesPath: string) {
-        this.actions.openWindow(resourcesPath, 'jslt', 'JSLT.txt', 'JSON.json');
+        this.actions.openWindows(resourcesPath, 'jslt', 'JSLT.txt', 'JSON.json');
     }
 
     getContent(origin: string) {

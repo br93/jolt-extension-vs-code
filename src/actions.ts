@@ -3,13 +3,19 @@ import path = require('path');
 
 export class VSCodeActions {
 
-    async openWindow(resourcesPath: string, transformation: string, firstFile: string, secondFile: string) {
+    async openWindows(resourcesPath: string, transformation: string, firstFile: string, secondFile: string) {
 
         const firstWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, firstFile));
         vscode.window.showTextDocument(firstWindow, vscode.ViewColumn.Beside, false);
 
         const secondWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, secondFile));
         vscode.window.showTextDocument(secondWindow, vscode.ViewColumn.Beside, true);
+    }
+
+    async openWindow(resourcesPath: string, transformation: string, file: string) {
+
+        const firstWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, file));
+        vscode.window.showTextDocument(firstWindow, vscode.ViewColumn.Beside, false);
     }
 
     async showOutput(content: string, language?: string) {
@@ -24,7 +30,6 @@ export class VSCodeActions {
 
             vscode.window.showTextDocument(document, this.getViewColumn() + 1, false);
         }
-
     }
 
     public editOutput(content: string) {
@@ -34,6 +39,9 @@ export class VSCodeActions {
         const untitled = mutableEditor.find(
             (untitled) => untitled.document.isUntitled
         );
+        
+        if (!this.isOutput(untitled))
+            return false;
 
         return untitled?.edit(editBuilder => {
             const document = untitled?.document;
@@ -55,5 +63,9 @@ export class VSCodeActions {
         const data = decoder.decode(buffer);
 
         return data
+    }
+
+    private isOutput(output: vscode.TextEditor | undefined){
+        return (output?.document.languageId == "jsonc")
     }
 }
