@@ -5,6 +5,7 @@ import { jolt } from './jolt';
 import { jslt } from './jslt';
 import { newOperation } from './codelens/codelens';
 import JoltCodeLensProvider from './codelens/provider';
+import { autoCompleteSnippet } from './snippets';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -64,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let items: vscode.CompletionItem [] = []
 
 			const item: vscode.CompletionItem = new vscode.CompletionItem("- new operation");
-			item.insertText = new vscode.SnippetString(": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\",");
+			item.insertText = autoCompleteSnippet;
 			items.push(item);
 
 			return items;
