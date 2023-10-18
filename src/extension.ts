@@ -30,10 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable, windowDisposable, jsltDisposable, jsltWindowDisposable);
 
 	const sidebar = new JoltWebview(context?.extensionUri, resourcesPath, {});
-	let view = vscode.window.registerWebviewViewProvider(
-		"jolt-webview",
-		sidebar,
-	);
+
+	let view = vscode.window.registerWebviewViewProvider("jolt-webview", sidebar, {
+		webviewOptions: {
+			retainContextWhenHidden: false}
+	});
 	
 	context.subscriptions.push(view);
 
@@ -44,6 +45,15 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	const codelens = vscode.languages.registerCodeLensProvider(json, new JoltCodeLensProvider());
+
+	vscode.commands.registerCommand('codelens.enable', () => {
+		vscode.workspace.getConfiguration("codelens").update("enable", true, true)
+	});
+
+	vscode.commands.registerCommand('codelens.disable', () => {
+		vscode.workspace.getConfiguration("codelens").update("enable", false, true)
+
+	});
 
 	context.subscriptions.push(operation, codelens);
 }

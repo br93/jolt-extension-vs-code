@@ -2,7 +2,7 @@
 	"name": "jolt-extension",
 	"displayName": "jolt-extension",
 	"description": "Jolt extension for VS Code",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"publisher": "br93",
 	"author": "Bruno Reis",
 	"license": "LGPL-3.0-or-later",
@@ -26,25 +26,48 @@
 		"commands": [
 			{
 				"command": "extension.jolt",
-				"title": "JOLT (Transform)"
+				"title": "JOLT (Transform)",
+				"category": "JOLT"
 			},
 			{
 				"command": "openWindow.jolt",
-				"title": "JOLT (Create input/spec)"
+				"title": "JOLT (Create input/spec)",
+				"category": "JOLT"
 			},
 			{
 				"command": "operation.jolt",
-				"title": "JOLT (New operation)"
+				"title": "JOLT (New operation)",
+				"category": "JOLT"
 			},
 			{
 				"command": "extension.jslt",
-				"title": "JSLT (Transform)"
+				"title": "JSLT (Transform)",
+				"category": "JSLT"
 			},
 			{
 				"command": "openWindow.jslt",
-				"title": "JSLT (Create json/jslt)"
+				"title": "JSLT (Create json/jslt)",
+				"category": "JSLT"
+			},
+			{
+				"command": "codelens.enable",
+				"title": "Enable codelens",
+				"category": "Codelens"
+			},
+			{
+				"command": "codelens.disable",
+				"title": "Disable codelens",
+				"category": "Codelens"
 			}
 		],
+		"configuration": {
+			"properties": {
+				"codelens.enable": {
+					"type": "boolean",
+					"default": false
+				}
+			}
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{

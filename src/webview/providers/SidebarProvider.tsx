@@ -11,23 +11,29 @@ export class JoltWebview implements vscode.WebviewViewProvider {
 		private readonly extensionPath: vscode.Uri,
 		private readonly resourcesPath: string,
 		private data: any,
-		private _view: any = null
-	) { }
+		private _view: any = null,
+	) {
+		vscode.commands.executeCommand('codelens.enable');
+	}
+
 	private onDidChangeTreeData: vscode.EventEmitter<undefined | null | void> = new vscode.EventEmitter<undefined | null | void>();
 
 	refresh(context: any): void {
-		this.onDidChangeTreeData.fire(null);
+		this.onDidChangeTreeData.fire();
 		this._view.webview.html = this._getHtmlForWebview(this._view?.webview);
 	}
 
 	resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
+
 		webviewView.webview.options = {
 			enableScripts: true,
 			localResourceRoots: [this.extensionPath],
 		};
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 		this._view = webviewView;
+
 		this.activateMessageListener();
+		this.visibility();
 	}
 
 	private activateMessageListener() {
@@ -50,6 +56,12 @@ export class JoltWebview implements vscode.WebviewViewProvider {
 					vscode.window.showWarningMessage("error");
 					break;
 			}
+		});
+	}
+
+	private visibility() {
+		this._view.onDidChangeVisibility(() => {
+			this._view.visible ? vscode.commands.executeCommand('codelens.enable') : vscode.commands.executeCommand('codelens.disable')
 		});
 	}
 
