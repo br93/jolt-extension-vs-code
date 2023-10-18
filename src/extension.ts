@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	context.subscriptions.push(view);
 
-	const operation = vscode.commands.registerCommand('operation.jolt', newOperation);
+	const operationCommand = vscode.commands.registerCommand('operation.jolt', newOperation);
 
 	const json = {
 		language: "json"
@@ -55,5 +55,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
-	context.subscriptions.push(operation, codelens);
+	context.subscriptions.push(operationCommand, codelens);
+
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
+		json, 
+		{
+		  provideCompletionItems(document,position,token) {
+			let items: vscode.CompletionItem [] = []
+
+			const item: vscode.CompletionItem = new vscode.CompletionItem("- new operation");
+			item.insertText = new vscode.SnippetString(": \"${1|shift,default,remove,sort,cardinality,modify-default-beta,modify-overwrite-beta|}\",");
+			items.push(item);
+
+			return items;
+		  }
+		},
+		'"operation"'
+	  ));
 }
