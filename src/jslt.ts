@@ -90,13 +90,16 @@ class JsltTransformation implements Transformation {
             });
     }
 
-    private generateReport(jslt: string, json: string, output: string) {
+    private async generateReport(jslt: string, json: string, output: string) {
         const report = JSON.stringify({
-            jslt: jslt,
-            payload: json
+            input: {
+                jslt: jslt,
+                payload: json
+            }
         }, null, 4);
-
-        this.actions.showOutput(report.slice(0, -2) + "," + output.slice(1), "json");
+        
+        await this.actions.showOutput(report.slice(0, -1) + "," + "\"output\": " + output + "}" , "json");
+        vscode.commands.executeCommand('editor.action.formatDocument');
     }
 }
 
