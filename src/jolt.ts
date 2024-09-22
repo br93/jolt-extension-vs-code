@@ -106,12 +106,11 @@ class JoltTransformation implements Transformation {
                 return this.actions.decode('iso-8859-1', buffer);
             })
             .then(text => {
-                if (text.startsWith("{")) {
+                if (text.startsWith("{") || text.startsWith("null")) {
                     this.actions.showOutput(this.actions.generateOutput(text), "jsonc");
                     vscode.window.showInformationMessage("JOLT transform successful");
                 } else {
-                    this.actions.showOutput(text, "txt");
-                    vscode.window.showInformationMessage("Error! Check your JSON File");
+                    vscode.window.showErrorMessage("Error! Check your JSON File", {detail: text, modal: true});
                 }
 
             })
