@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import fetch, { Request } from 'node-fetch';
 import { VSCodeActions } from './actions';
 import { Transformation } from './interfaces/transformation';
+import path = require('path');
 
 class JoltTransformation implements Transformation {
 
@@ -75,7 +76,7 @@ class JoltTransformation implements Transformation {
         return content?.getText() ?? '';
     }
 
-    async transform() {
+    async transform(resourcesPath: string) {
 
         const spec = this.getContent("spec");
         const input = this.getContent("input");
@@ -86,11 +87,11 @@ class JoltTransformation implements Transformation {
             throw new vscode.CancellationError();
         }
 
-        this.jolt(input, spec, sort);
+        this.jolt(input, spec, sort, resourcesPath);
 
     }
 
-    private async jolt(input: string, spec: string, sort: boolean) {
+    private async jolt(input: string, spec: string, sort: boolean, resourcesPath: string) {
 
         const requestOptions = {
             method: 'POST',
@@ -107,7 +108,8 @@ class JoltTransformation implements Transformation {
             })
             .then(text => {
                 if (text.startsWith("{") || text.startsWith("null")) {
-                    this.actions.showOutput(this.actions.generateOutput(text), "jsonc");
+                    // this.actions.showOutput(this.actions.generateOutput(text), "jsonc");
+                    this.actions.openOutput(resourcesPath, 'jolt', 'OUTPUT.json', text)
                     vscode.window.showInformationMessage("JOLT transform successful");
                 } else {
                     vscode.window.showErrorMessage("Error! Check your JSON File", {detail: text, modal: true});
