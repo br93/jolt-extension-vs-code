@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const resourcesPath = path.join(extensionDir, 'src', 'resources');
 
 	const disposable = vscode.commands.registerCommand('extension.jolt', () => {
-		jolt.transform();
+		jolt.transform(resourcesPath);
 	});
 
 	const windowDisposable = vscode.commands.registerCommand('openWindow.jolt', () => {

@@ -47,7 +47,7 @@ export class JoltWebview implements vscode.WebviewViewProvider {
 					jslt.openWindows(this.resourcesPath);
 					break;
 				case 'JOLT_TRANSFORM':
-					jolt.transform();
+					jolt.transform(this.resourcesPath);
 					break;
 				case 'JSLT_TRANSFORM':
 					jslt.transform();

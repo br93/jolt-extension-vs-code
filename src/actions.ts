@@ -32,19 +32,39 @@ export class VSCodeActions {
         }
     }
 
+    async openOutput(resourcesPath: string, transformation: string, file: string, content: string, language?: string) {
+
+        const alreadyOpen = this.editOutput(content);
+
+        if (!alreadyOpen) {
+            const outputDocument = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, file));
+            vscode.languages.setTextDocumentLanguage(outputDocument, language || "json")
+            vscode.window.showTextDocument(outputDocument, vscode.ViewColumn.Beside, false).then((editor) => {
+                editor.edit((editBuilder) => {
+                    const fullRange = new vscode.Range(
+                        outputDocument.positionAt(0),
+                        outputDocument.positionAt(outputDocument.getText().length)
+                    );
+                    editBuilder.replace(fullRange, content);
+                })
+            });
+        }
+
+    }
+
     public editOutput(content: string) {
 
-        const mutableEditor = vscode.window.visibleTextEditors.concat().reverse();
+        // const outputEditor = vscode.window.visibleTextEditors.find((editor) => {
+        //     editor.document.fileName.startsWith('OUTPUT')
+        // });
 
-        const untitled = mutableEditor.find(
-            (untitled) => untitled.document.isUntitled
-        );
+        const outputEditor = this.findEditorByTitle('OUTPUT');
         
-        if (!this.isOutput(untitled))
+        if (!outputEditor)
             return false;
 
-        return untitled?.edit(editBuilder => {
-            const document = untitled?.document;
+        return outputEditor?.edit(editBuilder => {
+            const document = outputEditor?.document;
 
             editBuilder.replace(new vscode.Range(document.lineAt(0).range.start, document.lineAt(document.lineCount - 1).range.end), content);
         }) ?? '';
@@ -68,4 +88,17 @@ export class VSCodeActions {
     private isOutput(output: vscode.TextEditor | undefined){
         return (output?.document.languageId == "jsonc")
     }
+
+    private findEditorByTitle(title: string){
+        const editors = vscode.window.visibleTextEditors;
+
+        for (const editor of editors) {
+            const fileName = editor.document.fileName;
+    
+            if (fileName.includes(title)) {
+                return editor;
+            }
+        }
+        return false;
+    } 
 }
