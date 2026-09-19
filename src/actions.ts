@@ -3,13 +3,17 @@ import path = require('path');
 
 export class VSCodeActions {
 
+    private outputEditor?: vscode.TextEditor;
+
     async openWindows(resourcesPath: string, transformation: string, firstFile: string, secondFile: string) {
+        await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+        this.outputEditor = undefined;
 
         const firstWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, firstFile));
-        vscode.window.showTextDocument(firstWindow, vscode.ViewColumn.Beside, false);
+        await vscode.window.showTextDocument(firstWindow, vscode.ViewColumn.Beside, false);
 
         const secondWindow = await vscode.workspace.openTextDocument(path.join(resourcesPath, transformation, secondFile));
-        vscode.window.showTextDocument(secondWindow, vscode.ViewColumn.Beside, true);
+        await vscode.window.showTextDocument(secondWindow, vscode.ViewColumn.Beside, true);
     }
 
     async openWindow(resourcesPath: string, transformation: string, file: string) {
@@ -20,16 +24,33 @@ export class VSCodeActions {
 
     async showOutput(content: string, language?: string) {
 
-        const alreadyExists = this.editOutput(content);
+        const outputEditor = this.outputEditor && !this.outputEditor.document.isClosed
+            ? this.outputEditor
+            : this.findEditorByTitle('OUTPUT');
 
-        if (!alreadyExists) {
+        if (outputEditor) {
+            this.outputEditor = outputEditor;
+            await this.replaceEditorContent(outputEditor, content);
+        } else {
             const document = await vscode.workspace.openTextDocument({
                 language,
                 content,
             });
 
-            vscode.window.showTextDocument(document, this.getViewColumn() + 1, false);
+            this.outputEditor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Three, false);
         }
+    }
+
+    private async replaceEditorContent(editor: vscode.TextEditor, content: string) {
+        const document = editor.document;
+        const fullRange = new vscode.Range(
+            document.positionAt(0),
+            document.positionAt(document.getText().length)
+        );
+
+        await editor.edit((editBuilder) => {
+            editBuilder.replace(fullRange, content);
+        });
     }
 
     async openOutput(resourcesPath: string, transformation: string, file: string, content: string, language?: string) {

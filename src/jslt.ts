@@ -71,22 +71,22 @@ class JsltTransformation implements Transformation {
         fetch(request)
             .then(response => response.arrayBuffer())
             .then(buffer => {
-                return this.actions.decode('iso-8859-1', buffer);
+                return this.actions.decode('utf-8', buffer);
             })
             .then(text => {
-
-                if (text.startsWith("{")) {
+                try {
+                    const output = this.actions.generateOutput(text);
                     vscode.window.showInformationMessage("JSLT transform successful");
-                    this.generateReport(jslt, json, this.actions.generateOutput(text));
-                }
-                else {
-                    this.actions.showOutput(this.actions.generateOutput(text), "json");
-                    vscode.window.showInformationMessage(text);
+                    this.generateReport(jslt, json, output);
+                } catch (error) {
+                    this.actions.showOutput(text, "text");
+                    vscode.window.showInformationMessage("An error occurred while processing the JSLT transformation. Please check the output for details.");
                 }
             })
             .catch(error => {
+                console.log(error);
                 this.actions.showOutput(JSON.stringify(error), "json");
-                vscode.window.showInformationMessage("Error, check your json file");
+                vscode.window.showInformationMessage("TESTE");
             });
     }
 
